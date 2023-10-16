@@ -11,4 +11,3 @@ class inherit from BaseModel.
 '''
     state_id = ""
     name = ""
-
