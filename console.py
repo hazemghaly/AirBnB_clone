@@ -145,3 +145,7 @@ Simple command processor example.
     def do_EOF(self, arg):
         """command EOF"""
         return True
+
+
+if __name__ == '__main__':
+    HBNBCommand().cmdloop()
