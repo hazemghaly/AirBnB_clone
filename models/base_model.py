@@ -17,8 +17,10 @@ to avoid duplicating the same code (by extension, same bugs).
         """
         This method initializes a new created BaseModel object.
         """
-        if (kwargs is None or len(kwargs) == 0):
-            self.id = str(uuid.uuid4())
+        self.id = str(uuid.uuid4())
+        if args is not None and len(args) > 0:
+            pass
+        elif (kwargs is None or len(kwargs) == 0):
             self.created_at = datetime.datetime.now()
             self.updated_at = datetime.datetime.now()
             storage.new(self)
@@ -36,6 +38,8 @@ to avoid duplicating the same code (by extension, same bugs).
         """
     This class method provides the informal string representation of BaseModel.
         """
+        if self.id is None:
+            return "[{}] ({}) {}".format(self.__class__.__name__)
         my_str = "[{}] ({}) {}".format(
                         self.__class__.__name__,
                         self.id,

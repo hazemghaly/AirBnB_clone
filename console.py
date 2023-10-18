@@ -3,7 +3,6 @@
 greating console very simple.
 '''
 
-import datetime
 import cmd
 from models.base_model import BaseModel
 from models.user import User
@@ -45,33 +44,31 @@ Simple command processor example.
         h = arg.split()
         if len(h) == 0:
             print("** class name missing **")
-        elif h[0] not in HBNBCommand._class:
+        elif len(h) >= 1 and h[0] not in HBNBCommand._class:
             print("** class doesn't exist **")
         else:
-            print(eval(h[0])().id)
+            new_obj = eval("{}()".format(h[0]))
+            storage.new(new_obj)
             storage.save()
+            print(new_obj.id)
 
     def do_show(self, arg):
         """Prints the string representation"""
         h = arg.split()
         a = storage.all()
-        f = False
-        p = ""
+        p = None
         if len(h) == 2 and h[0] in HBNBCommand._class:
             for key in a:
-                if a[key]['id'] == h[1]:
-                    current_obj = eval("{}(a[key])".format(h[0]))
-                    current_obj.id = h[1]
-                    p = "{}".format(current_obj)
-                    f = True
+                if a[key].id == h[1] and a[key].__class__.__name__ == h[0]:
+                    p = a[key]
                     break
         if len(h) == 0:
             print("** class name missing **")
-        elif h[0] not in HBNBCommand._class:
+        elif len(h) >= 1 and h[0] not in HBNBCommand._class:
             print("** class doesn't exist **")
         elif len(h) == 1 and h[0] in HBNBCommand._class:
             print("** instance id missing **")
-        elif len(h) == 2 and f is False:
+        elif len(h) >= 2 and p is None:
             print("** no instance found **")
         else:
             print(p)
@@ -79,12 +76,19 @@ Simple command processor example.
     def do_all(self, arg):
         """Prints the string representation"""
         h = arg.split()
-        if len(h) == 0:
-            print("** class name missing **")
-        elif h[0] not in HBNBCommand._class:
+        a = storage.all()
+        h_list = []
+        if len(h) == 1 and h[0] in HBNBCommand._class:
+            for key in a:
+                if a[key].__class__.__name__ == h[0]:
+                    h_list.append(a[key].__str__())
+        elif len(h) == 0:
+            for key in a:
+                h_list.append(a[key].__str__())
+        if len(h) == 1 and h[0] not in HBNBCommand._class:
             print("** class doesn't exist **")
         else:
-            print([eval(h[0])().__str__()])
+            print(h_list)
 
     def do_destroy(self, arg):
         """ Deletes an instance based on the class name and id"""
@@ -93,7 +97,7 @@ Simple command processor example.
         f = False
         if len(h) == 2 and h[0] in HBNBCommand._class:
             for key in a:
-                if a[key]['id'] == h[1]:
+                if a[key].id == h[1] and a[key].__class__.__name__ == h[0]:
                     del a[key]
                     f = True
                     break
@@ -111,34 +115,28 @@ Simple command processor example.
     def do_update(self, arg):
         """updates the string representation"""
         h = arg.split()
-        print(len(h))
-        s = ""
         a = storage.all()
-        f = False
+        obj_key = None
         if len(h) >= 2 and h[0] in HBNBCommand._class:
             for key in a:
-                if a[key]['id'] == h[1]:
-                    current_obj = eval("{}(a[key])".format(h[0]))
-                    current_obj.id = h[1]
-                    if len(h) == 4:
-                        eval("setattr(current_obj, h[2],h[3])")
-                    s = "{}".format(current_obj)
-                    f = True
+                if a[key].id == h[1]:
+                    obj_key = key
                     break
         if len(h) == 0:
             print("** class name missing **")
-        elif h[0] not in HBNBCommand._class:
-            print("** class doesn't exist **")
         elif len(h) == 1 and h[0] in HBNBCommand._class:
             print("** instance id missing **")
-        elif len(h) == 2 and f is False:
-            print("** no instance found **")
-        elif len(h) == 2 and h[0] in HBNBCommand._class and f is True:
+        elif h[0] not in HBNBCommand._class:
+            print("** class doesn't exist **")
+        elif len(h) == 2 and obj_key is not None:
             print("** attribute name missing **")
-        elif len(h) == 3 and h[0] in HBNBCommand._class:
+        elif obj_key is None:
+            print("** no instance found **")
+        elif len(h) == 3:
             print("** value missing **")
         else:
-            print(s)
+            setattr(a[key], h[2], h[3])
+            storage.save()
 
     def do_quit(self, line):
         """command quit"""
@@ -147,7 +145,3 @@ Simple command processor example.
     def do_EOF(self, arg):
         """command EOF"""
         return True
-
-
-if __name__ == '__main__':
-    HBNBCommand().cmdloop()

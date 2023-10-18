@@ -8,9 +8,9 @@ from models.base_model import BaseModel
 from models import storage
 
 
-class TestBase(unittest.TestCase):
+class TestBaseModel(unittest.TestCase):
     """
-    This class for testing a BaseModel class.
+    This class for testing the BaseModel class.
     """
 
     def testBaseModelSave(self):
@@ -46,3 +46,17 @@ class TestBase(unittest.TestCase):
                         b.__dict__)
         self.assertIsInstance(b.__str__(), str)
         self.assertEqual(b.__str__(), my_str)
+
+    def testBaseModelCreateWithArgs(self):
+        p1 = BaseModel([])
+        self.assertIsInstance(p1, BaseModel)
+        p2 = BaseModel({"id": "7b425ff5-00c1-4196-ba1b-542c7f7d068f",
+                        "created_at": "2023-10-17T18:09:36.171374",
+                        "updated_at": "2023-10-17T18:09:36.171376",
+                        "__class__": "BaseModel"})
+        self.assertEqual(
+            p2.__str__(),
+            "[{}] ({}) {}".format(
+                p2.__class__.__name__,
+                p2.id,
+                p2.__dict__))
