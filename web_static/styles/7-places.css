@@ -1,0 +1,15 @@
+.places{
+
+    font-size: 30px;
+}
+
+article{
+    display: flex;
+    justify-content: space-between;
+    width: 395px;
+    border: 1px #FF5A5F solid;
+    border-radius: 4px;
+    padding: 30px;
+    margin: 30px;
+
+}
